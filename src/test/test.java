@@ -12,16 +12,15 @@ import com.fosasoft.dfc.Import;
 public class test {
 	
 	
-	private static void doTesting(IDfSession session) {
-		
+	private static void doTesting(IDfSession session) throws IOException {
+		String localPath = "C:\\temp\\PARKED\\Temp";
+		Import imp = new Import();
+		imp.readFilesFromPath(localPath);
 	}
 
 	public static void main(String[] args) throws IOException {
 
-		String localPath = "C:\\temp\\PARKED\\Temp";
-		Import imp = new Import();
-		imp.readFilesFromPath(localPath);
-
+		
 		IDfSession session = null;
 		try {
 			session = createSessionManager("xcprepo", "dmadmin", "dmadmin").getSession("xcprepo");
