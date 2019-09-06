@@ -8,7 +8,7 @@ import com.documentum.fc.client.IDfSessionManager;
 import com.documentum.fc.common.IDfLoginInfo;
 
 public class SessionDFC {
-	public static IDfSessionManager createSessionManager(String docbase, String user, String pass) throws Exception {
+	public IDfSession createSessionManager(String repo, String user, String pass) throws Exception {
 		IDfClientX clientx = new DfClientX();
 		IDfClient client = clientx.getLocalClient();
 		IDfSessionManager sMgr = client.newSessionManager();
@@ -16,12 +16,12 @@ public class SessionDFC {
 		loginInfoObj.setUser(user);
 		loginInfoObj.setPassword(pass);
 		loginInfoObj.setDomain(null);
-		sMgr.setIdentity(docbase, loginInfoObj);
+		sMgr.setIdentity(repo, loginInfoObj);
 		System.err.println("Session Created..!");
-		return sMgr;
+		return sMgr.getSession(repo);
 	}
 
-	public static void releaseSession(IDfSession session) throws Exception {
+	public void releaseSession(IDfSession session) throws Exception {
 		if (session != null) {
 			IDfSessionManager sMgr = session.getSessionManager();
 			sMgr.release(session);

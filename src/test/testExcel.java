@@ -1,16 +1,26 @@
 package test;
 
-import com.fosasoft.dfc.Import;
+import java.util.Iterator;
+import java.util.List;
 
+import com.fosasoft.bean.ApplicationConstant;
+import com.fosasoft.bean.ExcelObject;
+import com.fosasoft.dfc.ExcelOperation;
 
 public class testExcel {
+
 	public static void main(String[] args) throws Exception {
-		Import imp = new Import(true);
 
-		String excelPath = "C:\\temp\\test.xlsx";
-		String sheetName = "Sheet1";
+		ApplicationConstant constant = new ApplicationConstant();
+		System.out.println(constant.getPathExcel());
+		System.out.println(constant.getPathFolder());
 
-		// imp.readFilesFromPath(localPath);
-		imp.readMetaDataFromExcel(excelPath, sheetName);
+		ExcelOperation excel = new ExcelOperation();
+		List<ExcelObject> listExcelObject = excel.readMetaDataFromExcel(constant.getPathExcel());
+		Iterator<ExcelObject> iteratorExcelObject = listExcelObject.iterator();
+
+		while (iteratorExcelObject.hasNext()) {
+			iteratorExcelObject.next().print();
+		}
 	}
 }
