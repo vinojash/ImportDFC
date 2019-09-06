@@ -9,7 +9,7 @@ import com.fosasoft.dfc.SessionDFC;
 public class test {
 
 	private static void doTesting(IDfSession session) throws IOException, DfException {
-		Import imp = new Import();
+		Import imp = new Import(true);
 
 		String excelPath = "C:\\temp\\test.xlsx";
 		String sheetName = "Sheet1";

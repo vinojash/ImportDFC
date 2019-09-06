@@ -5,7 +5,6 @@ public class ContentObject {
 	private String path = null;
 	private String objectType = null;
 
-
 	public String getObjectName() {
 		return objectName;
 	}
@@ -28,5 +27,10 @@ public class ContentObject {
 
 	public void setObjectType(String objectType) {
 		this.objectType = objectType;
+	}
+
+	public void print() {
+		System.out.println(
+				"Object Name : " + this.objectName + "\nObject Type : " + this.objectType + "\nPath : " + this.path +"\n");
 	}
 }

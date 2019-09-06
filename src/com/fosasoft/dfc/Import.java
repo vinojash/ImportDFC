@@ -25,6 +25,12 @@ import com.fosasoft.bean.ContentObject;
 
 public class Import {
 
+	private boolean debugging = false;
+
+	public Import(boolean debug) {
+		this.debugging = debug;
+	}
+
 	public String createDocument(IDfSession session, ContentObject cObject) throws DfException {
 		IDfDocument document = null;
 		try {
@@ -52,7 +58,8 @@ public class Import {
 		return files;
 	}
 
-	public void createContentObjectFromExcel(IDfSession session, String excelPath, String sheetName) throws DfException {
+	public void createContentObjectFromExcel(IDfSession session, String excelPath, String sheetName)
+			throws DfException {
 		List<ContentObject> ls = readMetaDataFromExcel(excelPath, sheetName);
 		Iterator<ContentObject> iterator = ls.iterator();
 		String objectId = null;
@@ -65,7 +72,7 @@ public class Import {
 		}
 	}
 
-	private List<ContentObject> readMetaDataFromExcel(String excelPath, String sheetName) {
+	public List<ContentObject> readMetaDataFromExcel(String excelPath, String sheetName) {
 
 		List<ContentObject> cObjects = new ArrayList<>();
 		try {
@@ -92,6 +99,9 @@ public class Import {
 							cObject.setPath(currentCell.getStringCellValue());
 						}
 					}
+					if(debugging) {
+						cObject.print();
+					}
 					cObjects.add(cObject);
 				}
 			}
@@ -102,6 +112,8 @@ public class Import {
 		}
 		return cObjects;
 	}
+
+	
 
 	private void logFiledInfo(ContentObject cObject) {
 		System.err.println(cObject.getObjectName());
