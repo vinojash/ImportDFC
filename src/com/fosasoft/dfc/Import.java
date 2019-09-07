@@ -41,8 +41,8 @@ public class Import {
 		excelObjects = excelOperation.readMetaDataFromExcel(constant.getPathExcel());
 		successWorkBook = excelOperation.createExcel(true);
 		failedWorkBook = excelOperation.createExcel(false);
-		// this.session = sessionDFC.createSessionManager(constant.getRepository(),
-		// constant.getUserName(), constant.getPassword());
+		this.session = sessionDFC.createSessionManager(constant.getRepository(), constant.getUserName(),
+				constant.getPassword());
 	}
 
 	private ExcelObject getAttributeFromExcel(String objectId) {
@@ -73,18 +73,16 @@ public class Import {
 			excelObject.setPathContentServer(pathContentServer);
 			excelObject.setObjectName(objectName);
 			excelObject.setFileExtension(fileExtension);
-			// excelObject = helperDfc.createDocument(session, excelObject);
+			excelObject = helperDfc.createDocument(session, excelObject);
 
 			if (excelObject.getIsSuccess()) {
 				successWorkBook = excelOperation.insertEntry(successWorkBook, excelObject);
 				String newPath = absolutePath.replace(pathFolder, pathSuccessfullyUploaded);
 				moveFile(absolutePath, newPath);
-				// System.out.println(excelObject.print());
 			} else {
 				String newPath = absolutePath.replace(pathFolder, pathFailedUpload);
 				Files.move(path, Paths.get(newPath), StandardCopyOption.REPLACE_EXISTING);
 				moveFile(absolutePath, newPath);
-				// System.err.println(excelObject.print());
 			}
 
 		} else {
@@ -96,7 +94,6 @@ public class Import {
 			String newPath = absolutePath.replace(pathFolder, pathFailedUpload);
 			moveFile(absolutePath, newPath);
 			failedWorkBook = excelOperation.insertEntry(failedWorkBook, excelObject);
-			//System.err.println(excelObject.print());
 		}
 
 	}
@@ -108,7 +105,6 @@ public class Import {
 
 		if (oFile.renameTo(nFile)) {
 			oFile.delete();
-			//System.out.println("File moved successfully");
 		}
 	}
 

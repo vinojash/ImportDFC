@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,7 +31,6 @@ public class ExcelOperation {
 	private HashMap<Integer, String> hashAttribute = new HashMap<Integer, String>();
 
 	public ExcelOperation() throws FileNotFoundException, IOException {
-		//test();
 		ApplicationConstant constant = new ApplicationConstant();
 		this.successJobSheet = constant.getPathSuccessfullyUploaded() + "\\SuccessJobSheet.xls";
 		this.failureJobSheet = constant.getPathFailedUpload() + "\\FailureJobSheet.xls";
@@ -46,24 +44,12 @@ public class ExcelOperation {
 		return this.failureJobSheet;
 	}
 
-	private void test() {
-		allSheetName.add("hon_ie75_import_job_docs");
-		allSheetName.add("hon_ie75_export_job_docs");
-		allSheetName.add("hon_ie75_foc_job_docs");
-		hashAttribute.put(0, "Object_ID");
-		hashAttribute.put(1, "File_Name");
-		hashAttribute.put(2, "Job_Id");
-		hashAttribute.put(3, "Document_Type");
-		hashAttribute.put(4, "Subject_to_Export_Control");
-		hashAttribute.put(5, "Subject_to_Data_Piracy");
-	}
-
 	public void saveWorkBook(Workbook workbook, String pathExcel) {
 		try {
 			OutputStream fileOut = new FileOutputStream(pathExcel);
 			workbook.write(fileOut);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -75,8 +61,8 @@ public class ExcelOperation {
 			pathExcel = failureJobSheet;
 		}
 
-		System.err.println(pathExcel);
-		Workbook wb = new HSSFWorkbook();
+		//Workbook wb = new HSSFWorkbook();
+		Workbook wb = new XSSFWorkbook();
 		try (OutputStream fileOut = new FileOutputStream(pathExcel)) {
 			Iterator<String> iteratorSheetName = allSheetName.iterator();
 			while (iteratorSheetName.hasNext()) {
@@ -94,7 +80,7 @@ public class ExcelOperation {
 			wb.createSheet("others");
 			wb.write(fileOut);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return wb;
 	}

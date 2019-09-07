@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fosasoft.bean.ApplicationConstant;
 import com.fosasoft.bean.Attribute;
@@ -35,7 +35,7 @@ public class CreateDummyData {
 		ApplicationConstant constant = new ApplicationConstant();
 		pathFolder = constant.getPathTest();
 		numberOfObject = constant.getNoOfTestObject();
-		pathExcel = pathFolder + "\\Garrett_ObjectTypes_Execution.xls";
+		pathExcel = pathFolder + "\\Garrett_ObjectTypes_Execution.xlsx";
 
 		createDirectory(pathFolder + "\\SuccessFolder");
 		createDirectory(pathFolder + "\\FailedFolder");
@@ -90,7 +90,7 @@ public class CreateDummyData {
 	}
 
 	public static Workbook createExcel() {
-		Workbook wb = new HSSFWorkbook();
+		Workbook wb = new XSSFWorkbook();
 		try (OutputStream fileOut = new FileOutputStream(pathExcel)) {
 			Iterator<String> iteratorSheetName = sheetNames.iterator();
 
