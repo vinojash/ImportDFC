@@ -9,7 +9,7 @@ import com.fosasoft.bean.Attribute;
 import com.fosasoft.bean.ExcelObject;
 
 public class HelperDFC {
-	public String createDocument(IDfSession session, ExcelObject excelObject) throws DfException {
+	public ExcelObject createDocument(IDfSession session, ExcelObject excelObject) throws DfException {
 		IDfDocument document = null;
 		try {
 			document = (IDfDocument) session.newObject(excelObject.getObjectType());
@@ -24,22 +24,14 @@ public class HelperDFC {
 					document.setString(attribute.getLabel(), attribute.getValue());
 				}
 				document.save();
+				excelObject.setNewObjectId(document.getObjectId().toString());
 			}
-			successObjectCreation(excelObject);
+			excelObject.setIsSuccess(true);
 		} catch (Exception e) {
+			excelObject.setIsSuccess(false);
 			excelObject.setMessage(e.getMessage());
-			failedObjectCreation(excelObject);
 			e.printStackTrace();
 		}
-
-		return document.getObjectId().toString();
-	}
-
-	private void failedObjectCreation(ExcelObject excelObject) {
-
-	}
-	
-	private void successObjectCreation(ExcelObject excelObject) {
-
+		return excelObject;
 	}
 }

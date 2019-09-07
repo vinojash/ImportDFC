@@ -2,12 +2,16 @@ package com.fosasoft.dfc;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -16,9 +20,84 @@ import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.fosasoft.bean.ApplicationConstant;
+import com.fosasoft.bean.Attribute;
 import com.fosasoft.bean.ExcelObject;
 
 public class ExcelOperation {
+
+	private String successJobSheet = null;
+	private String failureJobSheet = null;
+	private List<String> allSheetName = new ArrayList<String>();
+	private HashMap<Integer, String> hashAttribute = new HashMap<Integer, String>();
+
+	public ExcelOperation() throws FileNotFoundException, IOException {
+		//test();
+		ApplicationConstant constant = new ApplicationConstant();
+		this.successJobSheet = constant.getPathSuccessfullyUploaded() + "\\SuccessJobSheet.xls";
+		this.failureJobSheet = constant.getPathFailedUpload() + "\\FailureJobSheet.xls";
+	}
+
+	public String getSuccessJobSheet() {
+		return this.successJobSheet;
+	}
+
+	public String getFailureJobSheet() {
+		return this.failureJobSheet;
+	}
+
+	private void test() {
+		allSheetName.add("hon_ie75_import_job_docs");
+		allSheetName.add("hon_ie75_export_job_docs");
+		allSheetName.add("hon_ie75_foc_job_docs");
+		hashAttribute.put(0, "Object_ID");
+		hashAttribute.put(1, "File_Name");
+		hashAttribute.put(2, "Job_Id");
+		hashAttribute.put(3, "Document_Type");
+		hashAttribute.put(4, "Subject_to_Export_Control");
+		hashAttribute.put(5, "Subject_to_Data_Piracy");
+	}
+
+	public void saveWorkBook(Workbook workbook, String pathExcel) {
+		try {
+			OutputStream fileOut = new FileOutputStream(pathExcel);
+			workbook.write(fileOut);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public Workbook createExcel(Boolean isSuccessJobSheet) {
+		String pathExcel = null;
+		if (isSuccessJobSheet) {
+			pathExcel = successJobSheet;
+		} else {
+			pathExcel = failureJobSheet;
+		}
+
+		System.err.println(pathExcel);
+		Workbook wb = new HSSFWorkbook();
+		try (OutputStream fileOut = new FileOutputStream(pathExcel)) {
+			Iterator<String> iteratorSheetName = allSheetName.iterator();
+			while (iteratorSheetName.hasNext()) {
+				Sheet tempSheet = wb.createSheet(iteratorSheetName.next());
+				Iterator<String> iteratorColumn = hashAttribute.values().iterator();
+				int count = 0;
+				Row rowTemp = tempSheet.createRow(0);
+				while (iteratorColumn.hasNext()) {
+					String columnValue = iteratorColumn.next();
+					Cell cellTemp = rowTemp.createCell(count);
+					cellTemp.setCellValue(columnValue);
+					count++;
+				}
+			}
+			wb.createSheet("others");
+			wb.write(fileOut);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return wb;
+	}
 
 	public List<ExcelObject> readMetaDataFromExcel(String excelPath) {
 
@@ -30,6 +109,7 @@ public class ExcelOperation {
 			Iterator<Sheet> sheetIterator = workbook.sheetIterator();
 			while (sheetIterator.hasNext()) {
 				Sheet tempSheet = sheetIterator.next();
+				allSheetName.add(tempSheet.getSheetName());
 				listExcelObject.addAll(getSheetInformtion(tempSheet));
 			}
 		} catch (IOException e) {
@@ -41,14 +121,12 @@ public class ExcelOperation {
 	}
 
 	private HashMap<Integer, String> getAttributeNames(Row firstRow) {
-		HashMap<Integer, String> hashAttribute = new HashMap<Integer, String>();
 		Iterator<Cell> cellIterator = firstRow.iterator();
 
 		while (cellIterator.hasNext()) {
 			Cell currentCell = cellIterator.next();
 			hashAttribute.put(currentCell.getColumnIndex(), currentCell.getStringCellValue().toLowerCase());
 		}
-
 		return hashAttribute;
 	}
 
@@ -98,5 +176,22 @@ public class ExcelOperation {
 			}
 		}
 		return listExcelObject;
+	}
+
+	public Workbook insertEntry(Workbook workbook, ExcelObject excelObject) {
+		Sheet tempSheet = workbook.getSheet(excelObject.getObjectType());
+		Row rowTemp = tempSheet.createRow(tempSheet.getLastRowNum() + 1);
+		Iterator<Attribute> iteratorAttribute = excelObject.getAttributes().iterator();
+
+		Cell cellTemp = rowTemp.createCell(0);
+		cellTemp.setCellValue(excelObject.getObjectId());
+		int count = 1;
+		while (iteratorAttribute.hasNext()) {
+			Attribute attribute = iteratorAttribute.next();
+			cellTemp = rowTemp.createCell(count);
+			cellTemp.setCellValue(attribute.getValue());
+			count++;
+		}
+		return workbook;
 	}
 }

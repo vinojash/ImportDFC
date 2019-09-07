@@ -2,15 +2,18 @@ package com.fosasoft.bean;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Properties;
 
 public class ApplicationConstant {
-	private static Properties properties;
+	private Properties properties;
+	private String importPropertyPath = null;
 
 	public ApplicationConstant() throws FileNotFoundException, IOException {
 		properties = new Properties();
-		String importPropertyPath = System.getProperty("user.dir") + "\\src\\import.properties";
+		importPropertyPath = System.getProperty("user.dir") + "\\src\\import.properties";
 		properties.load(new FileInputStream(importPropertyPath));
 		this.pathExcel = properties.getProperty("pathExcel");
 		this.pathFolder = properties.getProperty("pathFolder");
@@ -20,6 +23,8 @@ public class ApplicationConstant {
 		this.password = properties.getProperty("password");
 		this.pathSuccessfullyUploaded = properties.getProperty("pathSuccessfullyUploaded");
 		this.pathFailedUpload = properties.getProperty("pathFailedUpload");
+		this.pathTest = properties.getProperty("pathTest");
+		this.NoOfTestObject = Integer.parseInt(properties.getProperty("NoOfTestObject"));
 	}
 
 	private String pathFolder = null;
@@ -28,8 +33,37 @@ public class ApplicationConstant {
 	private String repository = null;
 	private String userName = null;
 	private String password = null;
-	private String pathSuccessfullyUploaded=null;
-	private String pathFailedUpload=null;
+	private String pathSuccessfullyUploaded = null;
+	private String pathFailedUpload = null;
+	private String pathTest = null;
+	private int NoOfTestObject = 0;
+
+	public void setPathExcel(String pathExcel) {
+		properties.setProperty("pathExcel", pathExcel);
+		this.pathExcel = pathFolder;
+		this.storeProperty();
+	}
+
+	private void storeProperty() {
+		try {
+			properties.store(new FileOutputStream(importPropertyPath), null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void setPathFolder(String pathFolder) {
+		properties.setProperty("pathFolder", pathFolder);
+		this.pathFolder = pathFolder;
+		this.storeProperty();
+	}
+
+	public void setPathContentServer(String pathContentServer) {
+		properties.setProperty("pathContentServer", pathContentServer);
+		this.pathContentServer = pathContentServer;
+		this.storeProperty();
+	}
 
 	public String getPathFolder() {
 		return pathFolder;
@@ -48,7 +82,9 @@ public class ApplicationConstant {
 	}
 
 	public void setRepository(String repository) {
+		properties.setProperty("repository", repository);
 		this.repository = repository;
+		this.storeProperty();
 	}
 
 	public String getUserName() {
@@ -56,7 +92,9 @@ public class ApplicationConstant {
 	}
 
 	public void setUserName(String userName) {
+		properties.setProperty("userName", userName);
 		this.userName = userName;
+		this.storeProperty();
 	}
 
 	public String getPassword() {
@@ -64,7 +102,9 @@ public class ApplicationConstant {
 	}
 
 	public void setPassword(String password) {
+		properties.setProperty("password", password);
 		this.password = password;
+		this.storeProperty();
 	}
 
 	public String getPathSuccessfullyUploaded() {
@@ -72,7 +112,9 @@ public class ApplicationConstant {
 	}
 
 	public void setPathSuccessfullyUploaded(String pathSuccessfullyUploaded) {
+		properties.setProperty("pathSuccessfullyUploaded", pathSuccessfullyUploaded);
 		this.pathSuccessfullyUploaded = pathSuccessfullyUploaded;
+		this.storeProperty();
 	}
 
 	public String getPathFailedUpload() {
@@ -80,6 +122,28 @@ public class ApplicationConstant {
 	}
 
 	public void setPathFailedUpload(String pathFailedUpload) {
+		properties.setProperty("pathFailedUpload", pathFailedUpload);
 		this.pathFailedUpload = pathFailedUpload;
+		this.storeProperty();
+	}
+
+	public String getPathTest() {
+		return pathTest;
+	}
+
+	public void setPathTest(String pathTest) {
+		this.pathTest = pathTest;
+		properties.setProperty("pathTest", pathTest);
+		this.storeProperty();
+	}
+
+	public int getNoOfTestObject() {
+		return NoOfTestObject;
+	}
+
+	public void setNoOfTestObject(int noOfTestObject) {
+		NoOfTestObject = noOfTestObject;
+		properties.setProperty("noOfTestObject", noOfTestObject + "");
+		this.storeProperty();
 	}
 }

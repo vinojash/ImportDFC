@@ -8,11 +8,13 @@ public class ExcelObject {
 	private String message = null;
 	private String objectId = null;
 	private String objectName = null;
+	private String newObjectId = null;
 	private String objectType = null;
 	private String fileExtension = null;
 	private String pathLocalFile = null;
 	private String pathContentServer = null;
-	
+	private Boolean isSuccess = true;
+
 	private List<Attribute> attributes = new ArrayList<Attribute>();
 
 	public String getObjectId() {
@@ -78,17 +80,17 @@ public class ExcelObject {
 		this.fileExtension = fileExtension;
 	}
 
-	public void print() {
+	public String print() {
 		Iterator<Attribute> iteratorAttribute = this.attributes.iterator();
 		String output = "**************************************\n";
-		output += "objectId \t:" + this.objectId + "\nobjectName \t:" + this.objectName + "\nfileExtension \t:"
-				+ this.fileExtension + "\nobjectType \t:" + this.objectType + "\npathLocalFile \t:" + this.pathLocalFile
-				+ "\npathCServer \t:" + this.pathContentServer;
+		output += "objectId \t:" + this.objectId + "\nnewObjectId \t:" + this.newObjectId + "\nobjectName \t:"
+				+ this.objectName + "\nfileExtension \t:" + this.fileExtension + "\nobjectType \t:" + this.objectType
+				+ "\npathLocalFile \t:" + this.pathLocalFile + "\npathCServer \t:" + this.pathContentServer;
 		while (iteratorAttribute.hasNext()) {
 			Attribute attribute = iteratorAttribute.next();
 			output += "\nLabel \t:" + attribute.getLabel() + "\nValue \t:" + attribute.getValue();
 		}
-		System.out.println(output);
+		return output;
 
 	}
 
@@ -98,6 +100,22 @@ public class ExcelObject {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getNewObjectId() {
+		return newObjectId;
+	}
+
+	public void setNewObjectId(String newObjectId) {
+		this.newObjectId = newObjectId;
+	}
+
+	public Boolean getIsSuccess() {
+		return isSuccess;
+	}
+
+	public void setIsSuccess(Boolean isSuccess) {
+		this.isSuccess = isSuccess;
 	}
 
 }

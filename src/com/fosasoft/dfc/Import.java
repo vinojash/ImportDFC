@@ -1,12 +1,16 @@
 package com.fosasoft.dfc;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.documentum.fc.client.IDfSession;
 import com.documentum.fc.common.DfException;
@@ -17,19 +21,28 @@ public class Import {
 
 	private String pathFolder = null;
 	private String pathContentServer = null;
+	private String pathSuccessfullyUploaded = null;
+	private String pathFailedUpload = null;
 	private List<ExcelObject> excelObjects;
 	private Iterator<ExcelObject> iteratorExcelObject;
 	private IDfSession session = null;
 	private HelperDFC helperDfc = new HelperDFC();
 	private SessionDFC sessionDFC = new SessionDFC();
+	private Workbook successWorkBook = null;
+	private Workbook failedWorkBook = null;
+	private ExcelOperation excelOperation = new ExcelOperation();
 
 	public Import() throws Exception {
 		ApplicationConstant constant = new ApplicationConstant();
 		this.pathFolder = constant.getPathFolder();
 		this.pathContentServer = constant.getPathContentServer();
-		excelObjects = new ExcelOperation().readMetaDataFromExcel(constant.getPathExcel());
-		this.session = sessionDFC.createSessionManager(constant.getRepository(), constant.getUserName(),
-				constant.getPassword());
+		this.pathSuccessfullyUploaded = constant.getPathSuccessfullyUploaded();
+		this.pathFailedUpload = constant.getPathFailedUpload();
+		excelObjects = excelOperation.readMetaDataFromExcel(constant.getPathExcel());
+		successWorkBook = excelOperation.createExcel(true);
+		failedWorkBook = excelOperation.createExcel(false);
+		// this.session = sessionDFC.createSessionManager(constant.getRepository(),
+		// constant.getUserName(), constant.getPassword());
 	}
 
 	private ExcelObject getAttributeFromExcel(String objectId) {
@@ -37,13 +50,14 @@ public class Import {
 		while (iteratorExcelObject.hasNext()) {
 			ExcelObject excelObject = iteratorExcelObject.next();
 			if (excelObject.getObjectId().equalsIgnoreCase(objectId)) {
+				excelObjects.remove(excelObject);
 				return excelObject;
 			}
 		}
 		return null;
 	}
 
-	private void getAttributes(Path path) throws DfException {
+	private void getAttributes(Path path) throws DfException, IOException {
 		String absolutePath = path.toAbsolutePath().toString();
 		String fileName = path.getFileName().toString();
 		String pathContentServer = this.pathContentServer
@@ -52,28 +66,67 @@ public class Import {
 		String objectName = fileName.split("-")[1].split("\\.")[0].trim();
 		String fileExtension = fileName.split("-")[1].split("\\.")[1].trim();
 
-		ExcelObject excelObject = this.getAttributeFromExcel(objectId);
-		excelObject.setPathLocalFile(absolutePath);
-		excelObject.setPathContentServer(pathContentServer);
-		excelObject.setObjectName(objectName);
-		excelObject.setFileExtension(fileExtension);
+		ExcelObject excelObject = null;
+		excelObject = this.getAttributeFromExcel(objectId);
+		if (null != excelObject) {
+			excelObject.setPathLocalFile(absolutePath);
+			excelObject.setPathContentServer(pathContentServer);
+			excelObject.setObjectName(objectName);
+			excelObject.setFileExtension(fileExtension);
+			// excelObject = helperDfc.createDocument(session, excelObject);
 
-		// print the output
-		excelObject.print();
+			if (excelObject.getIsSuccess()) {
+				successWorkBook = excelOperation.insertEntry(successWorkBook, excelObject);
+				String newPath = absolutePath.replace(pathFolder, pathSuccessfullyUploaded);
+				moveFile(absolutePath, newPath);
+				// System.out.println(excelObject.print());
+			} else {
+				String newPath = absolutePath.replace(pathFolder, pathFailedUpload);
+				Files.move(path, Paths.get(newPath), StandardCopyOption.REPLACE_EXISTING);
+				moveFile(absolutePath, newPath);
+				// System.err.println(excelObject.print());
+			}
 
-		//helperDfc.createDocument(session, excelObject);
+		} else {
+			excelObject = new ExcelObject();
+			excelObject.setObjectType("others");
+			excelObject.setObjectId(objectId);
+			excelObject.addAttributes("message", "metadata not found in excel sheet");
+			failedWorkBook = excelOperation.insertEntry(failedWorkBook, excelObject);
+			String newPath = absolutePath.replace(pathFolder, pathFailedUpload);
+			moveFile(absolutePath, newPath);
+			failedWorkBook = excelOperation.insertEntry(failedWorkBook, excelObject);
+			//System.err.println(excelObject.print());
+		}
 
 	}
 
-	public void readFilesFromPath() throws IOException {
+	private void moveFile(String oldPath, String newPath) {
+		File oFile = new File(oldPath);
+		File nFile = new File(newPath);
+		nFile.getParentFile().mkdirs();
+
+		if (oFile.renameTo(nFile)) {
+			oFile.delete();
+			//System.out.println("File moved successfully");
+		}
+	}
+
+	public void readFilesFromPath() throws Exception {
 		try (Stream<Path> paths = Files.walk(Paths.get(pathFolder))) {
 			paths.filter(Files::isRegularFile).forEach(path -> {
 				try {
 					getAttributes(path);
-				} catch (DfException e) {
+				} catch (DfException | IOException e) {
 					e.printStackTrace();
 				}
 			});
+		} finally {
+			if (null != this.session) {
+				this.sessionDFC.releaseSession(this.session);
+			}
+			excelOperation.saveWorkBook(successWorkBook, excelOperation.getSuccessJobSheet());
+			excelOperation.saveWorkBook(failedWorkBook, excelOperation.getFailureJobSheet());
 		}
 	}
 }
