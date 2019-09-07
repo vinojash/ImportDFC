@@ -31,6 +31,7 @@ public class Import {
 	private Workbook successWorkBook = null;
 	private Workbook failedWorkBook = null;
 	private ExcelOperation excelOperation = new ExcelOperation();
+	private File fileFolder = null;
 
 	public Import() throws Exception {
 		ApplicationConstant constant = new ApplicationConstant();
@@ -41,6 +42,7 @@ public class Import {
 		excelObjects = excelOperation.readMetaDataFromExcel(constant.getPathExcel());
 		successWorkBook = excelOperation.createExcel(true);
 		failedWorkBook = excelOperation.createExcel(false);
+		this.fileFolder = new File(pathFolder);
 		this.session = sessionDFC.createSessionManager(constant.getRepository(), constant.getUserName(),
 				constant.getPassword());
 	}
@@ -65,7 +67,7 @@ public class Import {
 		String objectId = fileName.split("-")[0].trim();
 		String objectName = fileName.split("-")[1].split("\\.")[0].trim();
 		String fileExtension = fileName.split("-")[1].split("\\.")[1].trim();
-
+		pathContentServer = pathContentServer.replace("\\", "/");
 		ExcelObject excelObject = null;
 		excelObject = this.getAttributeFromExcel(objectId);
 		if (null != excelObject) {
@@ -74,7 +76,7 @@ public class Import {
 			excelObject.setObjectName(objectName);
 			excelObject.setFileExtension(fileExtension);
 			excelObject = helperDfc.createDocument(session, excelObject);
-
+			System.err.println(excelObject.print());
 			if (excelObject.getIsSuccess()) {
 				successWorkBook = excelOperation.insertEntry(successWorkBook, excelObject);
 				String newPath = absolutePath.replace(pathFolder, pathSuccessfullyUploaded);
@@ -124,5 +126,35 @@ public class Import {
 			excelOperation.saveWorkBook(successWorkBook, excelOperation.getSuccessJobSheet());
 			excelOperation.saveWorkBook(failedWorkBook, excelOperation.getFailureJobSheet());
 		}
+	}
+
+	/*
+	 * 
+	 * For older version of JAVA
+	 * 
+	 */
+
+//	public void readFilesFromPath() {
+//		getFilesFromPath(fileFolder);
+//	}
+
+	public void getFilesFromPath(File folder) throws Exception {
+		try {
+			for (final File fileEntry : folder.listFiles()) {
+				if (fileEntry.isDirectory()) {
+					getFilesFromPath(fileEntry);
+				} else {
+					System.out.println(fileEntry.getName());
+				}
+			}
+		} finally {
+			if (null != this.session) {
+				this.sessionDFC.releaseSession(this.session);
+			}
+			excelOperation.saveWorkBook(successWorkBook, excelOperation.getSuccessJobSheet());
+			excelOperation.saveWorkBook(failedWorkBook, excelOperation.getFailureJobSheet());
+
+		}
+
 	}
 }
