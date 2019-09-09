@@ -76,7 +76,7 @@ public class ApplicationConstant {
 	}
 
 	public String getRepository() {
-		return repository;
+		return repository.replaceAll("\"", "");
 	}
 
 	public void setRepository(String repository) {
@@ -86,7 +86,7 @@ public class ApplicationConstant {
 	}
 
 	public String getUserName() {
-		return userName;
+		return userName.replaceAll("\"", "");
 	}
 
 	public void setUserName(String userName) {
@@ -96,7 +96,7 @@ public class ApplicationConstant {
 	}
 
 	public String getPassword() {
-		return password;
+		return password.replaceAll("\"", "");
 	}
 
 	public void setPassword(String password) {

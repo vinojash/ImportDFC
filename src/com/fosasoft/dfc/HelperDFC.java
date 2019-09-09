@@ -1,5 +1,8 @@
 package com.fosasoft.dfc;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -32,6 +35,9 @@ public class HelperDFC {
 				excelObject.setNewObjectId(document.getObjectId().toString());
 			}
 			excelObject.setIsSuccess(true);
+			Date date = Calendar.getInstance().getTime();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+			excelObject.setendDateTime(dateFormat.format(date));
 		} catch (Exception e) {
 			excelObject.setIsSuccess(false);
 			excelObject.setMessage(e.getMessage());
@@ -77,8 +83,7 @@ public class HelperDFC {
 					dm_path = dm_path + "/" + dirs[i];
 
 					// see if this path exists
-					IDfFolder testFolder = (IDfFolder) session
-							.getObjectByQualification("dm_folder where any r_folder_path='" + dm_path + "'");
+					IDfFolder testFolder = (IDfFolder) session.getObjectByQualification("dm_folder where any r_folder_path='" + dm_path + "'");
 					if (null == testFolder) {
 
 						// check if a cabinet need to be made

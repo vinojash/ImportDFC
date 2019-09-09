@@ -43,8 +43,7 @@ public class Import {
 		successWorkBook = excelOperation.createExcel(true);
 		failedWorkBook = excelOperation.createExcel(false);
 		this.fileFolder = new File(pathFolder);
-		this.session = sessionDFC.createSessionManager(constant.getRepository(), constant.getUserName(),
-				constant.getPassword());
+		this.session = sessionDFC.createSessionManager(constant.getRepository(), constant.getUserName(), constant.getPassword());
 	}
 
 	private ExcelObject getAttributeFromExcel(String objectId) {
@@ -62,8 +61,7 @@ public class Import {
 	private void getAttributes(Path path) throws DfException, IOException {
 		String absolutePath = path.toAbsolutePath().toString();
 		String fileName = path.getFileName().toString();
-		String pathContentServer = this.pathContentServer
-				+ absolutePath.replace(pathFolder, "").replace("\\" + fileName, "");
+		String pathContentServer = this.pathContentServer + absolutePath.replace(pathFolder, "").replace("\\" + fileName, "");
 		String objectId = fileName.split("-")[0].trim();
 		String objectName = fileName.split("-")[1].split("\\.")[0].trim();
 		String fileExtension = fileName.split("-")[1].split("\\.")[1].trim();
