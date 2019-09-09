@@ -6,7 +6,7 @@ import java.util.Date;
 
 import com.fosasoft.dfc.Import;
 
-public class TestDummyData {
+public class DoBulkImport {
 	public static void main(String[] args) throws Exception {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
 		Date datestartOperation = Calendar.getInstance().getTime();
