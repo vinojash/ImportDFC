@@ -32,8 +32,8 @@ public class ExcelOperation {
 
 	public ExcelOperation() throws FileNotFoundException, IOException {
 		ApplicationConstant constant = new ApplicationConstant();
-		this.successJobSheet = constant.getPathSuccessfullyUploaded() + "\\SuccessJobSheet.xls";
-		this.failureJobSheet = constant.getPathFailedUpload() + "\\FailureJobSheet.xls";
+		this.successJobSheet = constant.getPathSuccessfullyUploaded() + "\\SuccessJobSheet.xlsx";
+		this.failureJobSheet = constant.getPathFailedUpload() + "\\FailureJobSheet.xlsx";
 	}
 
 	public String getSuccessJobSheet() {
