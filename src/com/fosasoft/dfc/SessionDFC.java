@@ -6,19 +6,32 @@ import com.documentum.fc.client.IDfClient;
 import com.documentum.fc.client.IDfSession;
 import com.documentum.fc.client.IDfSessionManager;
 import com.documentum.fc.common.IDfLoginInfo;
+import com.fosasoft.bean.ApplicationConstant;
 
 public class SessionDFC {
-	public IDfSession createSessionManager(String repo, String user, String pass) throws Exception {
+	
+	private String repository=null;
+	private String userName=null;
+	private String password=null;
+	
+	public SessionDFC() throws Exception {
+		ApplicationConstant constant = new ApplicationConstant();
+		this.repository=constant.getRepository();
+		this.userName=constant.getUserName();
+		this.password=constant.getPassword();
+	}
+	
+	public IDfSession createSessionManager() throws Exception {
 		IDfClientX clientx = new DfClientX();
 		IDfClient client = clientx.getLocalClient();
 		IDfSessionManager sMgr = client.newSessionManager();
 		IDfLoginInfo loginInfoObj = clientx.getLoginInfo();
-		loginInfoObj.setUser(user);
-		loginInfoObj.setPassword(pass);
+		loginInfoObj.setUser(userName);
+		loginInfoObj.setPassword(password);
 		loginInfoObj.setDomain(null);
-		sMgr.setIdentity(repo, loginInfoObj);
+		sMgr.setIdentity(repository, loginInfoObj);
 		System.err.println("Session Created..!");
-		return sMgr.getSession(repo);
+		return sMgr.getSession(repository);
 	}
 
 	public void releaseSession(IDfSession session) throws Exception {

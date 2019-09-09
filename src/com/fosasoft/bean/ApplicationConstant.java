@@ -9,6 +9,16 @@ import java.util.Properties;
 public class ApplicationConstant {
 	private Properties properties;
 	private String importPropertyPath = null;
+	private String pathFolder = null;
+	private String pathExcel = null;
+	private String pathContentServer = null;
+	private String repository = null;
+	private String userName = null;
+	private String password = null;
+	private String pathSuccessfullyUploaded = null;
+	private String pathFailedUpload = null;
+	private String pathTest = null;
+	private int NoOfTestObject = 0;
 
 	public ApplicationConstant() throws FileNotFoundException, IOException {
 		properties = new Properties();
@@ -26,17 +36,7 @@ public class ApplicationConstant {
 		this.NoOfTestObject = Integer.parseInt(properties.getProperty("NoOfTestObject"));
 	}
 
-	private String pathFolder = null;
-	private String pathExcel = null;
-	private String pathContentServer = null;
-	private String repository = null;
-	private String userName = null;
-	private String password = null;
-	private String pathSuccessfullyUploaded = null;
-	private String pathFailedUpload = null;
-	private String pathTest = null;
-	private int NoOfTestObject = 0;
-
+	
 	public void setPathExcel(String pathExcel) {
 		properties.setProperty("pathExcel", pathExcel);
 		this.pathExcel = pathFolder;
@@ -76,7 +76,7 @@ public class ApplicationConstant {
 	}
 
 	public String getRepository() {
-		return repository.replaceAll("\"", "");
+		return repository;
 	}
 
 	public void setRepository(String repository) {
@@ -86,7 +86,7 @@ public class ApplicationConstant {
 	}
 
 	public String getUserName() {
-		return userName.replaceAll("\"", "");
+		return userName;
 	}
 
 	public void setUserName(String userName) {
@@ -96,7 +96,7 @@ public class ApplicationConstant {
 	}
 
 	public String getPassword() {
-		return password.replaceAll("\"", "");
+		return password;
 	}
 
 	public void setPassword(String password) {

@@ -43,7 +43,7 @@ public class Import {
 		successWorkBook = excelOperation.createExcel(true);
 		failedWorkBook = excelOperation.createExcel(false);
 		this.fileFolder = new File(pathFolder);
-		this.session = sessionDFC.createSessionManager(constant.getRepository(), constant.getUserName(), constant.getPassword());
+		this.session = sessionDFC.createSessionManager();
 	}
 
 	private ExcelObject getAttributeFromExcel(String objectId) {

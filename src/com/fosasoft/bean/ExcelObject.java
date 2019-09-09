@@ -24,12 +24,6 @@ public class ExcelObject {
 	public void setendDateTime(String endDateTime) {
 		this.endDateTime = endDateTime;
 	}
-	
-	public ExcelObject() {
-		Date date = Calendar.getInstance().getTime();  
-	    SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");  
-		this.startDateTime=dateFormat.format(date);
-	}
 
 	public String getObjectId() {
 		return objectId;
@@ -94,19 +88,6 @@ public class ExcelObject {
 		this.fileExtension = fileExtension;
 	}
 
-	public String print() {
-		Iterator<Attribute> iteratorAttribute = this.attributes.iterator();
-		String output = "**************************************\n";
-		output += "objectId \t:" + this.objectId + "\nnewObjectId \t:" + this.newObjectId + "\nobjectName \t:" + this.objectName + "\nfileExtension \t:" + this.fileExtension + "\nobjectType \t:"
-				+ this.objectType + "\npathLocalFile \t:" + this.pathLocalFile + "\npathCServer \t:" + this.pathContentServer + "\nstartDateTime \t:" + this.startDateTime + "\nendDateTime \t:" + this.endDateTime;
-		while (iteratorAttribute.hasNext()) {
-			Attribute attribute = iteratorAttribute.next();
-			output += "\nLabel \t:" + attribute.getLabel() + "\nValue \t:" + attribute.getValue();
-		}
-		return output;
-
-	}
-
 	public String getMessage() {
 		return message;
 	}
@@ -129,6 +110,26 @@ public class ExcelObject {
 
 	public void setIsSuccess(Boolean isSuccess) {
 		this.isSuccess = isSuccess;
+	}
+
+	public ExcelObject() {
+		Date date = Calendar.getInstance().getTime();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+		this.startDateTime = dateFormat.format(date);
+	}
+
+	public String print() {
+		Iterator<Attribute> iteratorAttribute = this.attributes.iterator();
+		String output = "**************************************\n";
+		output += "objectId \t:" + this.objectId + "\nnewObjectId \t:" + this.newObjectId + "\nobjectName \t:" + this.objectName + "\nfileExtension \t:" + this.fileExtension + "\nobjectType \t:"
+				+ this.objectType + "\npathLocalFile \t:" + this.pathLocalFile + "\npathCServer \t:" + this.pathContentServer + "\nstartDateTime \t:" + this.startDateTime + "\nendDateTime \t:"
+				+ this.endDateTime;
+		while (iteratorAttribute.hasNext()) {
+			Attribute attribute = iteratorAttribute.next();
+			output += "\nLabel \t:" + attribute.getLabel() + "\nValue \t:" + attribute.getValue();
+		}
+		return output;
+
 	}
 
 }
